@@ -202,7 +202,7 @@ Widget _buildSliverListRenderWidgetChild(List<String> items) {
 
 Widget _buildSliverList({
   List<int> items = const <int>[],
-  ScrollController controller,
+  ScrollController? controller,
   double itemHeight = 500.0,
   double viewportHeight = 300.0,
 }) {

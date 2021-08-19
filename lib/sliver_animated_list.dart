@@ -18,8 +18,8 @@ class _ActiveItem implements Comparable<_ActiveItem> {
       : controller = null,
         removedItemBuilder = null;
 
-  final AnimationController controller;
-  final AnimatedListRemovedItemBuilder removedItemBuilder;
+  final AnimationController? controller;
+  final AnimatedListRemovedItemBuilder? removedItemBuilder;
   int itemIndex;
 
   @override
@@ -38,8 +38,8 @@ class _ActiveItem implements Comparable<_ActiveItem> {
 class SliverAnimatedList extends StatefulWidget {
   /// Creates a sliver that animates items when they are inserted or removed.
   const SliverAnimatedList({
-    Key key,
-    @required this.itemBuilder,
+    Key? key,
+    required this.itemBuilder,
     this.initialItemCount = 0,
     this.reverse = false,
   })  : assert(itemBuilder != null),
@@ -77,12 +77,12 @@ class SliverAnimatedList extends StatefulWidget {
   /// ```dart
   /// SliverAnimatedListState animatedList = SliverAnimatedList.of(context);
   /// ```
-  static SliverAnimatedListState of(BuildContext context,
+  static SliverAnimatedListState? of(BuildContext context,
       {bool nullOk = false}) {
     assert(context != null);
     assert(nullOk != null);
-    final SliverAnimatedListState result = context
-        .ancestorStateOfType(const TypeMatcher<SliverAnimatedListState>());
+    final SliverAnimatedListState? result = context
+        .findAncestorStateOfType<SliverAnimatedListState>();
     if (nullOk || result != null) return result;
     throw FlutterError(
         'SliverAnimatedList.of() called with a context that does not contain a SliverAnimatedList.\n'
@@ -136,17 +136,17 @@ class SliverAnimatedListState extends State<SliverAnimatedList>
   @override
   void dispose() {
     for (_ActiveItem item in _incomingItems.followedBy(_outgoingItems)) {
-      item.controller.dispose();
+      item.controller!.dispose();
     }
     super.dispose();
   }
 
-  _ActiveItem _removeActiveItemAt(List<_ActiveItem> items, int itemIndex) {
+  _ActiveItem? _removeActiveItemAt(List<_ActiveItem> items, int itemIndex) {
     final int i = binarySearch(items, _ActiveItem.index(itemIndex));
     return i == -1 ? null : items.removeAt(i);
   }
 
-  _ActiveItem _activeItemAt(List<_ActiveItem> items, int itemIndex) {
+  _ActiveItem? _activeItemAt(List<_ActiveItem> items, int itemIndex) {
     final int i = binarySearch(items, _ActiveItem.index(itemIndex));
     return i == -1 ? null : items[i];
   }
@@ -218,8 +218,8 @@ class SliverAnimatedListState extends State<SliverAnimatedList>
     });
 
     controller.forward().then<void>((_) {
-      _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)
-          .controller
+      _removeActiveItemAt(_incomingItems, incomingItem.itemIndex)!
+          .controller!
           .dispose();
     });
   }
@@ -245,7 +245,7 @@ class SliverAnimatedListState extends State<SliverAnimatedList>
     assert(itemIndex >= 0 && itemIndex < _itemsCount);
     assert(_activeItemAt(_outgoingItems, itemIndex) == null);
 
-    final _ActiveItem incomingItem =
+    final _ActiveItem? incomingItem =
         _removeActiveItemAt(_incomingItems, itemIndex);
     final AnimationController controller = incomingItem?.controller ??
         AnimationController(duration: duration, value: 1.0, vsync: this);
@@ -258,8 +258,8 @@ class SliverAnimatedListState extends State<SliverAnimatedList>
     });
 
     controller.reverse().then<void>((void value) {
-      _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)
-          .controller
+      _removeActiveItemAt(_outgoingItems, outgoingItem.itemIndex)!
+          .controller!
           .dispose();
 
       // Decrement the incoming and outgoing item indices to account
@@ -278,12 +278,12 @@ class SliverAnimatedListState extends State<SliverAnimatedList>
   }
 
   Widget _itemBuilder(BuildContext context, int itemIndex) {
-    final _ActiveItem outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
+    final _ActiveItem? outgoingItem = _activeItemAt(_outgoingItems, itemIndex);
     if (outgoingItem != null)
-      return outgoingItem.removedItemBuilder(
-          context, outgoingItem.controller.view);
+      return outgoingItem.removedItemBuilder!(
+          context, outgoingItem.controller!.view);
 
-    final _ActiveItem incomingItem = _activeItemAt(_incomingItems, itemIndex);
+    final _ActiveItem? incomingItem = _activeItemAt(_incomingItems, itemIndex);
     final Animation<double> animation =
         incomingItem?.controller?.view ?? kAlwaysCompleteAnimation;
     return widget.itemBuilder(context, _itemIndexToIndex(itemIndex), animation);

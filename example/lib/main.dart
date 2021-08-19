@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sliver_animated_list/sliver_animated_list.dart';
+import 'package:sliver_animated_list/sliver_animated_list.dart' as animatedList;
 
 void main() => runApp(MyApp());
 
